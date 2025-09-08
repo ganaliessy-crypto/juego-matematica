@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Juego de Matemáticas - Primaria</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f0f9ff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { color: #0077b6; }
+    .quiz-container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .option {
+      display: block;
+      background: #caf0f8;
+      padding: 12px;
+      margin: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      border: none;
+      width: 100%;
+      font-size: 16px;
+    }
+    .option:hover { background: #90e0ef; }
+    #timer {
+      font-size: 18px;
+      color: #d62828;
+      margin: 10px 0;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #03045e;
+    }
+    img {
+      max-width: 150px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 Juego de Matemáticas 📚</h1>
+  <img src="https://cdn-icons-png.flaticon.com/512/2729/2729007.png" alt="Matemáticas">
+
+  <div class="quiz-container">
+    <div id="quiz">
+      <h2 id="levelTitle"></h2>
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+      <div id="timer">⏳ Tiempo: <span id="timeLeft"></span> seg</div>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const levels = {
+      facil: [
+        { question: "¿Cuánto es 3 + 2?", options: ["4", "5", "6", "7"], correct: 1, img: "https://cdn-icons-png.flaticon.com/512/1048/1048953.png" },
+        { question: "¿Cuánto es 6 - 4?", options: ["1", "2", "3", "4"], correct: 1, img: "https://cdn-icons-png.flaticon.com/512/2272/2272221.png" },
+        { question: "¿Cuánto es 9 + 1?", options: ["9", "10", "11", "12"], correct: 1, img: "https://cdn-icons-png.flaticon.com/512/616/616408.png" },
+        { question: "¿Cuánto es 8 - 3?", options: ["4", "5", "6", "7"], correct: 1, img: "https://cdn-icons-png.flaticon.com/512/597/597177.png" },
+        { question: "Si tengo 2 peras y compro 3 más, ¿cuántas tengo?", options: ["4", "5", "6", "7"], correct: 1, img: "https://static.vecteezy.com/system/resources/previews/018/931/047/original/cartoon-pear-icon-png.png" }
+      ],
+      medio: [
+        { question: "¿Cuánto es 7 x 3?", options: ["21", "24", "18", "27"], correct: 0, img: "https://cdn-icons-png.flaticon.com/512/2729/2729020.png" },
+        { question: "¿Cuánto es 15 ÷ 3?", options: ["4", "5", "6", "3"], correct: 1, img: "https://cdn-icons-png.flaticon.com/512/616/616489.png" },
+        { question: "¿Cuánto es 12 + 15?", options: ["25", "26", "27", "28"], correct: 2, img: "https://cdn-icons-png.flaticon.com/512/992/992651.png" },
+        { question: "¿Cuánto es 20 - 9?", options: ["10", "11", "12", "13"], correct: 1, img: "https://cdn-icons-png.flaticon.com/512/3176/3176367.png" },
+        { question: "¿Cuánto es 5 x 5?", options: ["20", "25", "30", "35"], correct: 1, img: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png" }
+      ],
+      dificil: [
+        { question: "Si tengo 12 galletas y las reparto en 4 amigos, ¿cuántas recibe cada uno?", options: ["2", "3", "4", "6"], correct: 2, img: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png" },
+        { question: "¿Cuánto es (8 x 5) - 10?", options: ["40", "30", "50", "20"], correct: 1, img: "https://cdn-icons-png.flaticon.com/512/3449/3449550.png" },
+        { question: "¿Cuánto es 100 ÷ 5?", options: ["15", "18", "20", "25"], correct: 2, img: "https://cdn-icons-png.flaticon.com/512/711/711284.png" },
+        { question: "¿Cuánto es 12 x 4?", options: ["36", "44", "48", "52"], correct: 2, img: "https://cdn-icons-png.flaticon.com/512/2907/2907253.png" },
+        { question: "Si Pedro tiene 50 caramelos y reparte 10 a cada amigo, ¿cuántos amigos reciben caramelos?", options: ["4", "5", "6", "7"], correct: 1, img: "https://static.vecteezy.com/system/resources/previews/041/927/816/original/illustration-of-kid-with-candy-vector.jpg" }
+      ]
+    };
+
+    let currentLevel = "facil";
+    let currentQuestion = 0;
+    let score = parseInt(localStorage.getItem("mathScore")) || 0;
+    let timer;
+    let timeLimit = 30;
+
+    function loadQuestion() {
+      const q = levels[currentLevel][currentQuestion];
+      document.getElementById("levelTitle").innerText = "Nivel: " + currentLevel.toUpperCase();
+      document.getElementById("question").innerText = q.question;
+      
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      
+      const img = document.createElement("img");
+      img.src = q.img;
+      optionsDiv.appendChild(img);
+
+      q.options.forEach((option, index) => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.innerText = option;
+        btn.onclick = () => checkAnswer(index);
+        optionsDiv.appendChild(btn);
+      });
+      
+      startTimer();
+    }
+
+    function startTimer() {
+      let timeLeft = timeLimit;
+      document.getElementById("timeLeft").innerText = timeLeft;
+      clearInterval(timer);
+      timer = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timeLeft").innerText = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          alert("⏰ Tiempo agotado!");
+          nextQuestion();
+        }
+      }, 1000);
+    }
+
+    function checkAnswer(selected) {
+      clearInterval(timer);
+      const q = levels[currentLevel][currentQuestion];
+      if (selected === q.correct) {
+        score++;
+        localStorage.setItem("mathScore", score);
+        alert("✅ Correcto! Puntaje actual: " + score);
+      } else {
+        alert("❌ Incorrecto. La respuesta correcta era: " + q.options[q.correct]);
+      }
+      nextQuestion();
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < levels[currentLevel].length) {
+        loadQuestion();
+      } else {
+        if (currentLevel === "facil") {
+          currentLevel = "medio";
+          currentQuestion = 0;
+          alert("🎉 Pasaste al nivel MEDIO!");
+          loadQuestion();
+        } else if (currentLevel === "medio") {
+          currentLevel = "dificil";
+          currentQuestion = 0;
+          alert("🔥 Pasaste al nivel DIFÍCIL!");
+          loadQuestion();
+        } else {
+          document.getElementById("quiz").style.display = "none";
+          document.getElementById("result").innerText =
+            "🏆 Terminaste todos los niveles!\nTu puntaje total guardado es: " + score + " de 15";
+        }
+      }
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
