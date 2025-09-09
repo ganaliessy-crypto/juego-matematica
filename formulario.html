@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Bienvenido al Juego de Matemáticas! 🎉</title>
+    <title>¡Metamagicos! 🎉</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+        body {
+            font-family: 'Fredoka One', cursive;
+            background: linear-gradient(to bottom, #87CEEB, #B0E0E6); /* Fondo celeste degradado */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 320px;
+            position: relative;
+            animation: bounceIn 1s ease;
+        }
+
+        h2 {
+            color: #FF6347; /* Rojo tomate */
+            font-size: 28px;
+            margin-bottom: 20px;
+            animation: popIn 0.8s ease;
+        }
+
+        input[type="text"] {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: 2px solid #FFB347;
+            font-size: 16px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        input[type="text"]:focus {
+            transform: scale(1.05);
+            border-color: #FF6347;
+            outline: none;
+        }
+
+        button {
+            padding: 12px 25px;
+            margin-top: 15px;
+            background-color: #FF6347;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #FF4500;
+            transform: scale(1.1);
+        }
+
+        /* Animaciones */
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            80% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Emojis flotantes */
+        .emoji {
+            position: absolute;
+            font-size: 30px;
+            animation: float 4s infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Emojis divertidos -->
+    <div class="emoji" style="top:10%; left:10%;">🧮</div>
+    <div class="emoji" style="top:20%; left:80%;">✏️</div>
+    <div class="emoji" style="top:70%; left:15%;">📚</div>
+    <div class="emoji" style="top:60%; left:75%;">🎲</div>
+
+    <div class="login-container">
+        <h2>¡inicio de sesion! </h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Escribe tu nombre" required><br>
+            <button type="submit">¡Jugar! 🎯</button>
+        </form>
+    </div>
+
+    <script>
+
+        const loginForm = document.getElementById('loginForm');
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+
+            if(username.trim() !== "") {
+                // Guardar el nombre de usuario en localStorage para usar en el juego
+                localStorage.setItem('playerName', username);
+                // Redirigir a index.html
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>
